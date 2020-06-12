@@ -33,74 +33,8 @@ python3 create_aug_dataset.py --root_dir ../raw_dataset --train ../scene_splits/
 ```shell
 ./run_train.sh
 ```
-
-### run_train.sh
-
-``` shell
-#!/bin/bash
-
-BATCH_SIZE=32
-VIS_INT=500
-LOG_INT=50
-DATASET_DIR=./dataset
-MODEL=resnet
-
-export CUDA_VISIBLE_DEVICES=0
-
-# train model on the raw dataset and append speed
-echo $MODEL" + SPEED"
-python3 train.py \
-	--model $MODEL\
-	--batch_size $BATCH_SIZE \
-	--vis_int $VIS_INT \
-	--log_int $LOG_INT \
-	--use_speed \
-	--dataset_dir $DATASET_DIR \
-
-# train model using 2D persepctive augmentation and append speed
-echo $MODEL" + SPEED + AUG"
-python3 train.py \
-	--model $MODEL\
-	--batch_size $BATCH_SIZE \
-	--vis_int $VIS_INT \
-	--log_int $LOG_INT \
-	--use_speed \
-	--use_aug \
-	--dataset_dir $DATASET_DIR \
-  ```
   
-  ## Test - Open loop evaluation
-  ```shell
-  ./run_test.sh
-  ```
-  
-  ### run_test.sh
-  ```shell
-  
-  #!/bin/bash
-
-BATCH_SIZE=32
-VIS_INT=500
-LOG_INT=50
-DATASET_DIR=./dataset
-MODEL=resnet
-
-
-# RGB + SPEED
-echo $MODEL" + SPEED"
-python3 test.py \
-	--model $MODEL\
-	--batch_size $BATCH_SIZE \
-	--use_speed \
-	--dataset_dir $DATASET_DIR \
-
-# RGB + SPEED + AUGM
-echo $MODEL" + SPEED + AUGM"
-python3 test.py \
- 	--model $MODEL\
- 	--batch_size $BATCH_SIZE \
- 	--use_speed \
- 	--use_augm \
-  	--dataset_dir $DATASET_DIR \
+## Test models - Open loop evaluation
+```shell
+./run_test.sh
 ```
-  
