@@ -22,6 +22,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 import math
 import cv2
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--root_dir", type=str, help="path to the directory containing the raw dataset (.mov & .json)")
+parser.add_argument("--train", type=str, help="path to the text file containing the training scenes")
+args = parser.parse_args()
 
 
 def get_steer(course, speed, dt, eps=1e-12):
@@ -211,12 +217,11 @@ def read_json(root_dir: str, json: str, verbose: bool = False):
 
 if __name__ == "__main__":
 	# get train scenes
-	with open("/mnt/storage/workspace/roberts/disertatie/scenes_split/train_scenes.txt", "rt") as fin:
+	with open(args.train, "rt") as fin:
 	    train_scenes = fin.read()
 	train_scenes = set(train_scenes.split("\n"))
 
-	ROOT_DIR = "/mnt/storage/workspace/roberts/upb/all_3fps"
-	files = os.listdir(ROOT_DIR)
+	files = os.listdir(args.root_dir)
 	jsons = [file for file in files if file.endswith(".json") and file[:-5] in train_scenes]
 
 	# creat necessary direcotries
@@ -230,7 +235,7 @@ if __name__ == "__main__":
 		os.makedirs("../dataset/data_aug")
 
 	for json in tqdm(jsons):
-	    read_json(ROOT_DIR, json, False)
+	    read_json(args.root_dir, json, False)
 
 	aug_files = os.listdir("../dataset/img_aug")
 	aug_files = [file[:-4] for file in aug_files]

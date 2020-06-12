@@ -11,6 +11,11 @@ import matplotlib.pyplot as plt
 from tqdm import tqdm
 import pickle as pkl
 from copy import deepcopy
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--root_dir", type=str, help="path to the directory containing the raw datasets (.mov & .json)")
+args = parser.parse_args()
 
 
 def read_json(root_dir: str, json: str, verbose: bool = False):
@@ -52,8 +57,7 @@ def read_json(root_dir: str, json: str, verbose: bool = False):
 
 
 if __name__ == "__main__":
-	ROOT_DIR = "/mnt/storage/workspace/roberts/upb/all_3fps"
-	files = os.listdir(ROOT_DIR)
+	files = os.listdir(args.root_dir)
 	jsons = [file for file in files if file.endswith(".json")]
 
 
@@ -68,5 +72,5 @@ if __name__ == "__main__":
 		os.makedirs("../dataset/data_real")
 
 	for json in tqdm(jsons):
-		read_json(ROOT_DIR, json, False)
+		read_json(args.root_dir, json, False)
 

@@ -1,20 +1,19 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
-
-
 import os
 import pandas as pd
+import argparse
 
+parser = argparse.ArgumentParser()
+parser.add_argument("--train", type=str, help="path to the text file containing training scenes")
+parser.add_argument("--test", type=str, help="path to the text file containing test scenes")
+args = parser.parse_args()
 
-# In[ ]:
-
-
-with open("/mnt/storage/workspace/roberts/disertatie/scenes_split/train_scenes.txt", "rt") as fin:
+with open(args.train, "rt") as fin:
     train_scenes = fin.read()
 
-with open("/mnt/storage/workspace/roberts/disertatie/scenes_split/test_scenes.txt", "rt") as fin:
+with open(args.test, "rt") as fin:
     test_scenes = fin.read()
     
 train_scenes = set(train_scenes.split("\n"))
