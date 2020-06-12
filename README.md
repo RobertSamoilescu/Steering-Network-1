@@ -1,5 +1,7 @@
 # Steering-Network-1
-
+<p align="center">
+  <img src="sample/train_sample.png" alt="train_sample" width="512" />
+</p>
 
 ## Create dataset
 
