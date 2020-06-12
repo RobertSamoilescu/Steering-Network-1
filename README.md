@@ -41,11 +41,7 @@ python3 create_aug_dataset.py --root_dir ../raw_dataset --train ../scene_splits/
 ./run_test.sh
 ```
 
-## Pre-trained models
-
-Pre-trained models available <a href="">here</a>
-
-## Result of the open-loop evaluation
+## Results of the open-loop evaluation
 
 |Model        | Augm.   | Mean  | St. dev.  | Min   | Max   |
 |-------------|---------|-------|-----------|-------|-------|
