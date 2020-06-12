@@ -48,7 +48,7 @@ Pre-trained models available <a href="">here</a>
 ## Result of the open-loop evaluation
 
 |Model        | Augm.   | Mean  | St. dev.  | Min   | Max   |
---------------------------------------------------------------
+|-------------|---------|-------|-----------|-------|-------|
 |Baseline     |   *     | 1.797 | 2.504     | 0.035 | 6.874 |
 |Simple       |   No    | 0.673 | 0.933     | 0.000 |10.877 | 
 |ResNet18     |   No    | 0.645 | 1.053     | 0.001 |10.595 |
