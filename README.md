@@ -32,8 +32,6 @@ python3 create_aug_dataset.py --root_dir ../raw_dataset --train ../scene_splits/
 ## Train models
 
 ``` shell
-#!/bin/bash
-
 BATCH_SIZE=32
 VIS_INT=500
 LOG_INT=50
