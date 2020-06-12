@@ -30,8 +30,15 @@ python3 create_aug_dataset.py --root_dir ../raw_dataset --train ../scene_splits/
 ```
 
 ## Train models
+```shell
+./run_train.sh
+```
+
+### run_train.sh
 
 ``` shell
+#!/bin/bash
+
 BATCH_SIZE=32
 VIS_INT=500
 LOG_INT=50
@@ -61,3 +68,39 @@ python3 train.py \
 	--use_aug \
 	--dataset_dir $DATASET_DIR \
   ```
+  
+  ## Test - Open loop evaluation
+  ```shell
+  ./run_test.sh
+  ```
+  
+  ### run_test.sh
+  ```shell
+  
+  #!/bin/bash
+
+BATCH_SIZE=32
+VIS_INT=500
+LOG_INT=50
+DATASET_DIR=./dataset
+MODEL=resnet
+
+
+# RGB + SPEED
+echo $MODEL" + SPEED"
+python3 test.py \
+	--model $MODEL\
+	--batch_size $BATCH_SIZE \
+	--use_speed \
+	--dataset_dir $DATASET_DIR \
+
+# RGB + SPEED + AUGM
+echo $MODEL" + SPEED + AUGM"
+python3 test.py \
+ 	--model $MODEL\
+ 	--batch_size $BATCH_SIZE \
+ 	--use_speed \
+ 	--use_augm \
+  	--dataset_dir $DATASET_DIR \
+```
+  
