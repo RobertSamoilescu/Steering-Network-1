@@ -32,6 +32,7 @@ parser.add_argument("--num_epochs", type=int, default=10, help="number of epochs
 parser.add_argument("--num_vis", type=int, default=4, help="number of visualizations")
 parser.add_argument("--use_augm", action="store_true", help="use augmentation dataset")
 parser.add_argument("--use_speed", action="store_true", help="append speed to nvidia model")
+parser.add_argument("--use_balance", action="store_true", help="balance training dataset")
 parser.add_argument("--load_model", type=str, help="checkpoint name", default=None)
 parser.add_argument("--model", type=str, default="nvidia", help="[nvidia, resnet]")
 args = parser.parse_args()
@@ -80,13 +81,34 @@ scheduler = torch.optim.lr_scheduler.StepLR(optimizer, args.step_size, 0.1)
 train_dataset = UPBDataset(args.dataset_dir, train=True, augm=args.use_augm)
 test_dataset = UPBDataset(args.dataset_dir, train=False)
 
-train_dataloader = DataLoader(
-	train_dataset, 
-	batch_size=args.batch_size, 
-	shuffle=True, 
-	drop_last=True, 
-	num_workers=args.num_workers
-)
+# balanced training dataset
+if args.use_balance:
+	weights_file = "weights"
+	if args.use_augm:
+		weights_file += "_augm"
+	weights_file += ".csv"
+
+	weights = pd.read_csv(os.path.join(args.dataset_dir, weights_file)).to_numpy().reshape(-1)
+	weights = torch.DoubleTensor(weights)                                       
+	sampler = torch.utils.data.sampler.WeightedRandomSampler(weights, len(weights))
+
+	train_dataloader = DataLoader(
+		train_dataset, 
+		batch_size=args.batch_size, 
+		sampler=sampler,
+		num_workers=args.num_workers,
+		pin_memory=True
+	)
+
+	experiment += "_balance"
+else:
+	train_dataloader = DataLoader(
+		train_dataset, 
+		batch_size=args.batch_size, 
+		shuffle=True, 
+		drop_last=True, 
+		num_workers=args.num_workers
+	)
 
 test_dataloader = DataLoader(
 	test_dataset,

@@ -8,15 +8,16 @@ MODEL=resnet
 
 export CUDA_VISIBLE_DEVICES=0
 
-# train model on the raw dataset and append speed
-echo $MODEL" + SPEED"
-python3 train.py \
-	--model $MODEL\
-	--batch_size $BATCH_SIZE \
-	--vis_int $VIS_INT \
-	--log_int $LOG_INT \
-	--use_speed \
-	--dataset_dir $DATASET_DIR \
+# # train model on the raw dataset and append speed
+# echo $MODEL" + SPEED"
+# python train.py \
+# 	--model $MODEL\
+# 	--batch_size $BATCH_SIZE \
+# 	--vis_int $VIS_INT \
+# 	--log_int $LOG_INT \
+# 	--use_speed \
+# 	--use_balance \
+# 	--dataset_dir $DATASET_DIR \
 
 # train model using 2D persepctive augmentation and append speed
 echo $MODEL" + SPEED + AUG"
@@ -27,4 +28,5 @@ python3 train.py \
 	--log_int $LOG_INT \
 	--use_speed \
 	--use_aug \
+	--use_balance \
 	--dataset_dir $DATASET_DIR \
