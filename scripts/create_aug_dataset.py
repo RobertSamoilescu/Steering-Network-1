@@ -1,9 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
-
-
 import os,sys,inspect
 currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 parentdir = os.path.dirname(currentdir)
@@ -23,7 +20,13 @@ import matplotlib.pyplot as plt
 import math
 import cv2
 import argparse
+import random
 
+# set seed
+np.random.seed(0)
+random.seed(0)
+
+# parse arguments
 parser = argparse.ArgumentParser()
 parser.add_argument("--root_dir", type=str, help="path to the directory containing the raw dataset (.mov & .json)")
 parser.add_argument("--train", type=str, help="path to the text file containing the training scenes")
@@ -170,13 +173,13 @@ def read_json(root_dir: str, json: str, verbose: bool = False):
 
         # generate random transformation
         if np.random.rand() < 0.33:
-            tx = sgnt * np.random.uniform(0.5, 1)
+            tx = sgnt * np.random.uniform(0.25, 0.75)
             ry = sgnr * np.random.uniform(0.05, 0.1)
         else:
             if np.random.rand() < 0.5:
-                tx = sgnt * np.random.uniform(0.5, 1.5)
+                tx = sgnt * np.random.uniform(0.25, 0.75)
             else:
-                ry = sgnr * np.random.uniform(0.05, 0.2) 
+                ry = sgnr * np.random.uniform(0.05, 0.1) 
         
         aug_name = "%s.tx=%.2f.ry=%.2f" % (json[:-5], tx, ry) 
     
