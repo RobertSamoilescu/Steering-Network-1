@@ -15,6 +15,9 @@ from util.vis import *
 from util.io import *
 
 from tqdm import tqdm
+import numpy as np
+import random
+
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--lr", type=float, default=1e-4, help="learning rate")
@@ -39,6 +42,8 @@ args = parser.parse_args()
 
 # set seed
 torch.manual_seed(0)
+np.random.seed(0)
+random.seed(0)
 
 # define device
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
