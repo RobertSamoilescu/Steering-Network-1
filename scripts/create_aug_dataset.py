@@ -51,7 +51,7 @@ def get_course(steer, speed, dt):
     return course
 
 
-def augment(data, translation, rotation, intersection_distance=7.5):
+def augment(data, translation, rotation, intersection_distance=10):
     """
     Augment a frame
     Warning!!! this augmentation may work only for turns less than 180 degrees. For bigger turns, although it

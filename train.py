@@ -10,9 +10,12 @@ import os
 
 from models.nvidia import *
 from models.resnet import *
+from models.wayve import *
+from models.alex import *
 from util.dataset import *
 from util.vis import *
 from util.io import *
+from util.early import *
 
 from tqdm import tqdm
 import numpy as np
@@ -20,9 +23,9 @@ import random
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--lr", type=float, default=1e-4, help="learning rate")
+parser.add_argument("--lr", type=float, default=1e-5, help="learning rate")
 parser.add_argument("--step_size", type=int, default=5, help="scheduler learning rate step size")
-parser.add_argument("--batch_size", type=int, default=12, help="batch size")
+parser.add_argument("--batch_size", type=int, default=128, help="batch size")
 parser.add_argument("--log_interval", type=int, default=50, help="number of batches to log after")
 parser.add_argument("--vis_interval", type=int, default=500, help="number of batches to visualize after")
 parser.add_argument("--save_interval", type=int, default=1, help="number of epoch to save the model after")
@@ -38,6 +41,8 @@ parser.add_argument("--use_speed", action="store_true", help="append speed to nv
 parser.add_argument("--use_balance", action="store_true", help="balance training dataset")
 parser.add_argument("--load_model", type=str, help="checkpoint name", default=None)
 parser.add_argument("--model", type=str, default="nvidia", help="[nvidia, resnet]")
+parser.add_argument("--patience", type=int, default=2, help="early stopping patience")
+parser.add_argument("--weight_decay", type=float, default=0, help="weight decay optimizer")
 args = parser.parse_args()
 
 # set seed
@@ -66,6 +71,18 @@ else:
 	).to(device)
 	experiment += "resnet"
 
+	# freez layers
+	# model.encoder.encoder.layer1.requires_grad_(False)
+	# model.encoder.encoder.layer2.requires_grad_(False)
+	# model.encoder.encoder.layer3.requires_grad_(False)
+	# model.encoder.encoder.layer4[0].conv1.requires_grad_(False)
+	# model.encoder.encoder.layer4[1].bn1.requires_grad_(False)
+	# model.encoder.encoder.layer4.requires_grad_(False)
+	# model.encoder.encoder.layer4[0].requires_grad_(False)
+	# model.encoder.encoder.layer4[1].conv1.requires_grad_(False)
+	# model.encoder.encoder.layer4[1].bn1.requires_grad_(False)
+	# model.encoder.encoder.layer4[1].bn1.requires_grad_(False)
+
 if args.use_speed:
 	experiment += "_speed"
 
@@ -77,10 +94,13 @@ criterion = nn.KLDivLoss(reduction="batchmean")
 
 # define optimizer
 if args.optimizer == "adam":
-	optimizer = optim.Adam(model.parameters(), lr=args.lr)
+	optimizer = optim.Adam(filter(lambda p: p.requires_grad, model.parameters()), lr=args.lr, weight_decay=args.weight_decay)
 else:
-	optimizer = optim.RMSprop(model.parameters(), lr=args.lr)
+	optimizer = optim.RMSprop(filter(lambda p: p.requires_grad, model.parameters()), lr=args.lr, weight_decay=args.weight_decay)
+
+# learning reate scheduler
 scheduler = torch.optim.lr_scheduler.StepLR(optimizer, args.step_size, 0.1)
+# scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min', patience=2, verbose=True)
 
 # define dataloaders
 train_dataset = UPBDataset(args.dataset_dir, train=True, augm=args.use_augm)
@@ -216,6 +236,9 @@ if __name__ == "__main__":
 				best_scores=[('best_score', best_score)]
 		)
 
+	# define early stopping
+	early_stopping = EarlyStopping(patience=args.patience)
+
 	for epoch in tqdm(range(start_epoch, args.num_epochs)):
 		model.train()
 		train_loss = run_epoch(train_dataloader, epoch=epoch, train_flag=True)
@@ -233,7 +256,8 @@ if __name__ == "__main__":
 
 		if epoch % args.save_interval == 0 and (best_score is None or best_score > test_loss):
 			best_score = test_loss
-			ckpt_name = os.path.join(args.vis_dir, experiment, "ckpts", "default.pth")
+			name = "epoch: %d; tloss: %.2f; vloss: %.2f.pth" % (epoch, train_loss, test_loss)
+			ckpt_name = os.path.join(args.vis_dir, experiment, "ckpts", name)
 			save_ckpt(
 				ckpt_name, 
 				models=[('model', model)], 
@@ -245,6 +269,12 @@ if __name__ == "__main__":
 			)
 			print("Model saved!")
 
+		# learning rate scheduler step
 		scheduler.step()
+
+		# early stopping
+		early_stopping(test_loss)
+		if early_stopping.early_stop == True:
+			break
 
 writer.close()

@@ -19,6 +19,7 @@ parser.add_argument("--dataset_dir", type=str, default="./dataset", help="datase
 parser.add_argument("--num_workers", type=int, default=4, help="number of workers for dataloader")
 parser.add_argument("--use_speed", action="store_true", help="append speed to nvidia model")
 parser.add_argument("--use_augm", action="store_true", help="use perspective augmentation")
+parser.add_argument("--use_balance", action="store_true", help="balance dataset")
 parser.add_argument("--load_model", type=int, help="checkpoint number", default=None)
 parser.add_argument("--model", type=str, help="[nvidia, resnet]", default=None)
 args = parser.parse_args()
@@ -47,6 +48,8 @@ if args.use_speed:
 	experiment += "_speed"
 if args.use_augm:
 	experiment += "_augm"
+if args.use_balance:
+	experiment += "_balance"
 
 # load model
 path = os.path.join("snapshots", experiment, "ckpts", "default.pth")
