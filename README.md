@@ -29,6 +29,10 @@ python3 split_dataset.py --train ../scene_splits/train_scenes.txt --test ../scen
 
 # create synthetic dataset by performin 2D perspective augmentations only for the training dataset
 python3 create_aug_dataset.py --root_dir ../raw_dataset --train ../scene_splits/train_scenes.txt
+
+# compute balancing weights
+python3 weights.py
+python3 weights.py --augm
 ```
 
 ## Train models
